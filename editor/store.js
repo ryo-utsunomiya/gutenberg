@@ -13,6 +13,7 @@ import { responsiveStoreEnhancer } from 'redux-responsive';
 import effects from './effects';
 import { mobileMiddleware } from './utils/mobile';
 import reducer from './reducer';
+import grtcMiddleware from './reducer';
 import storePersist from './store-persist';
 import { PREFERENCES_DEFAULTS } from './store-defaults';
 
@@ -29,7 +30,7 @@ const GUTENBERG_PREFERENCES_KEY = `GUTENBERG_PREFERENCES_${ window.userSettings.
  */
 function createReduxStore( preloadedState ) {
 	const enhancers = [
-		applyMiddleware( multi, refx( effects ) ),
+		applyMiddleware( multi, refx( effects ), grtcMiddleware ),
 		responsiveStoreEnhancer,
 		storePersist( {
 			reducerKey: 'preferences',
