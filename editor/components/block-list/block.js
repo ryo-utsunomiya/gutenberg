@@ -28,7 +28,6 @@ import BlockContextualToolbar from './block-contextual-toolbar';
 import BlockMultiControls from './multi-controls';
 import {
 	clearSelectedBlock,
-	collaborationState,
 	editPost,
 	focusBlock,
 	insertBlocks,
@@ -48,7 +47,6 @@ import {
 	getBlockIndex,
 	getEditedPostAttribute,
 	getNextBlock,
-	getPeerData,
 	getPreviousBlock,
 	isBlockHovered,
 	isBlockMultiSelected,
@@ -269,7 +267,7 @@ class BlockListBlock extends Component {
 
 	onFocus( event ) {
 		if ( event.target === this.node ) {
-			this.props.onSelect( this.props.peerData );
+			this.props.onSelect();
 		}
 	}
 
@@ -287,7 +285,7 @@ class BlockListBlock extends Component {
 			}
 		} else {
 			this.props.onSelectionStart( this.props.uid );
-			this.props.onSelect( this.props.peerData );
+			this.props.onSelect();
 		}
 	}
 
@@ -346,9 +344,7 @@ class BlockListBlock extends Component {
 	render() {
 		const { block, order, mode, showContextualToolbar, isLocked } = this.props;
 		const { name: blockName, isValid } = block;
-		const { peerName, peerColor, peerShowStyle } = this.props.peerData.peerMetaData;
-		const peerColorClass = 'collab-' + peerColor;
-		const blockType = getBlockType( block.name );
+		const blockType = getBlockType( blockName );
 		// translators: %s: Type of block (i.e. Text, Image etc)
 		const blockLabel = sprintf( __( 'Block: %s' ), blockType.title );
 		// The block as rendered in the editor is composed of general block UI
@@ -356,15 +352,13 @@ class BlockListBlock extends Component {
 
 		// Generate the wrapper class names handling the different states of the block.
 		const { isHovered, isSelected, isMultiSelected, isFirstMultiSelected, focus } = this.props;
-		let showUI = isSelected && ( ! this.props.isTyping || ( focus && focus.collapsed === false ) );
+		const showUI = isSelected && ( ! this.props.isTyping || ( focus && focus.collapsed === false ) );
 		const { error } = this.state;
 		const wrapperClassName = classnames( 'editor-block-list__block', {
 			'has-warning': ! isValid || !! error,
 			'is-selected': showUI,
 			'is-multi-selected': isMultiSelected,
 			'is-hovered': isHovered,
-			'is-collaboration': true,
-			[ peerColorClass ]: true,
 		} );
 
 		const { onMouseLeave, onFocus, onReplace } = this.props;
@@ -380,10 +374,6 @@ class BlockListBlock extends Component {
 			getBlockDefaultClassname( block.name ) :
 			null;
 		const className = classnames( generatedClassName, block.attributes.className );
-		// Don't show controls when collaboration is enabled.
-		if ( peerShowStyle ) {
-			showUI = false;
-		}
 
 		// Disable reason: Each block can be selected by clicking on it
 		/* eslint-disable jsx-a11y/no-static-element-interactions, jsx-a11y/onclick-has-role, jsx-a11y/click-events-have-key-events */
@@ -400,7 +390,6 @@ class BlockListBlock extends Component {
 				{ ...wrapperProps }
 			>
 				<BlockDropZone index={ order } />
-				<legend className="collaboration-legend">{ peerName }</legend>
 				{ ( showUI || isHovered ) && <BlockMover uids={ [ block.uid ] } /> }
 				{ ( showUI || isHovered ) && <BlockSettingsMenu uids={ [ block.uid ] } /> }
 				{ showUI && isValid && showContextualToolbar && <BlockContextualToolbar /> }
@@ -470,7 +459,6 @@ const mapStateToProps = ( state, { uid } ) => ( {
 	meta: getEditedPostAttribute( state, 'meta' ),
 	mode: getBlockMode( state, uid ),
 	isSelectionEnabled: isSelectionEnabled( state ),
-	peerData: getPeerData( state, uid ),
 } );
 
 const mapDispatchToProps = ( dispatch, ownProps ) => ( {
@@ -478,9 +466,8 @@ const mapDispatchToProps = ( dispatch, ownProps ) => ( {
 		dispatch( updateBlockAttributes( uid, attributes ) );
 	},
 
-	onSelect( peerData ) {
+	onSelect() {
 		dispatch( selectBlock( ownProps.uid ) );
-		dispatch( collaborationState( peerData.grtcProps, ownProps.uid ) );
 	},
 	onDeselect() {
 		dispatch( clearSelectedBlock() );
@@ -538,7 +525,6 @@ const mapDispatchToProps = ( dispatch, ownProps ) => ( {
 } );
 
 export default compose(
-	withFilters( 'Editor.BlockItem' ),
 	connect( mapStateToProps, mapDispatchToProps ),
 	withContext( 'editor' )( ( settings ) => {
 		const { templateLock } = settings;
@@ -547,4 +533,5 @@ export default compose(
 			isLocked: !! templateLock,
 		};
 	} ),
+	withFilters( 'editor.BlockListBlock' )
 )( BlockListBlock );
