@@ -72,6 +72,28 @@ function getFormatProperties( formatName, parents ) {
 
 const DEFAULT_FORMATS = [ 'bold', 'italic', 'strikethrough', 'link' ];
 
+/**
+ * Transforms internal block's representation into an Element.
+ *
+ * @param {Array} value Value to transform
+ * @return {WPElement} Element.
+ */
+export function valueToElement( value ) {
+	if ( ! Array.isArray( value ) ) {
+		return value;
+	}
+
+	return value.map( ( element, i ) => {
+		if ( typeof element === 'string' ) {
+			return element;
+		}
+
+		const [ type, props, ...children ] = element;
+
+		return createElement( type, { ...props, key: i }, ...valueToElement( children ) );
+	} );
+}
+
 export default class Editable extends Component {
 	constructor( props ) {
 		super( ...arguments );
@@ -691,7 +713,7 @@ export default class Editable extends Component {
 			content = '';
 		}
 
-		content = renderToString( valueToReact( content ) );
+		content = renderToString( valueToElement( content ) );
 		this.editor.setContent( content, { format: 'raw' } );
 	}
 
@@ -849,7 +871,7 @@ export default class Editable extends Component {
 					getSettings={ this.getSettings }
 					onSetup={ this.onSetup }
 					style={ style }
-					defaultValue={ valueToReact( value ) }
+					defaultValue={ valueToElement( value ) }
 					isPlaceholderVisible={ isPlaceholderVisible }
 					aria-label={ placeholder }
 					{ ...ariaProps }
@@ -879,20 +901,4 @@ Editable.defaultProps = {
 	formatters: [],
 };
 
-Editable.Value = ( { value } ) => valueToReact( value );
-
-function valueToReact( value ) {
-	if ( ! Array.isArray( value ) ) {
-		return value;
-	}
-
-	return value.map( ( element, i ) => {
-		if ( typeof element === 'string' ) {
-			return element;
-		}
-
-		const [ type, props, ...children ] = element;
-
-		return createElement( type, { ...props, key: i }, ...valueToReact( children ) );
-	} );
-}
+Editable.Value = ( { value } ) => valueToElement( value );
