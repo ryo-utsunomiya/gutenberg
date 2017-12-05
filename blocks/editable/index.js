@@ -507,15 +507,27 @@ export default class Editable extends Component {
 	 * @param {KeydownEvent} event The keydow event as triggered by tinyMCE.
 	 */
 	onKeyDown( event ) {
+		const dom = this.editor.dom;
+		const rootNode = this.editor.getBody();
+
 		if (
 			this.props.onMerge && (
 				( event.keyCode === BACKSPACE && this.isStartOfEditor() ) ||
 				( event.keyCode === DELETE && this.isEndOfEditor() )
 			)
 		) {
-			const forward = event.keyCode === DELETE;
 			this.fireChange();
-			this.props.onMerge( forward );
+
+			const isEmpty = dom.isEmpty( rootNode );
+			if ( this.props.onReplace && isEmpty ) {
+				// Remove this block if the editor is empty
+				this.props.onReplace( [] );
+			} else {
+				// Otherwise, merge this block with the previous or next one
+				const forward = event.keyCode === DELETE;
+				this.props.onMerge( forward );
+			}
+
 			event.preventDefault();
 			event.stopImmediatePropagation();
 		}
@@ -528,14 +540,11 @@ export default class Editable extends Component {
 					return;
 				}
 
-				const rootNode = this.editor.getBody();
 				const selectedNode = this.editor.selection.getNode();
 
 				if ( selectedNode.parentNode !== rootNode ) {
 					return;
 				}
-
-				const dom = this.editor.dom;
 
 				if ( ! dom.isEmpty( selectedNode ) ) {
 					return;
