@@ -41,7 +41,6 @@
     "redux": "3.7.2",
     "redux-multi": "0.1.12",
     "redux-optimist": "0.0.2",
-    "redux-responsive": "4.3.4",
     "refx": "2.1.0",
     "rememo": "2.3.3",
     "showdown": "1.7.4",
@@ -96,7 +95,7 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "(blocks|components|date|editor|element|i18n|utils)/**/*.js"
+      "(blocks|components|date|editor|element|i18n|data|utils)/**/*.js"
     ],
     "coveragePathIgnorePatterns": [
       "<rootDir>/[^/]+/build/index.js"
@@ -104,7 +103,7 @@
     "coverageDirectory": "coverage",
     "moduleNameMapper": {
       "\\.(scss|css)$": "<rootDir>/test/unit/style-mock.js",
-      "@wordpress\\/(blocks|components|date|editor|element|i18n|utils)": "$1"
+      "@wordpress\\/(blocks|components|date|editor|element|i18n|data|utils)": "$1"
     },
     "modulePaths": [
       "<rootDir>"
@@ -115,7 +114,7 @@
     ],
     "setupTestFrameworkScriptFile": "<rootDir>/test/unit/setup-test-framework.js",
     "testMatch": [
-      "<rootDir>/(blocks|components|date|editor|element|i18n|utils)/**/test/*.js"
+      "<rootDir>/(blocks|components|date|editor|element|i18n|data|utils)/**/test/*.js"
     ],
     "timers": "fake",
     "transform": {

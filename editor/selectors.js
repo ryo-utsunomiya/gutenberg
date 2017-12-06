@@ -25,11 +25,12 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { POST_UPDATE_TRANSACTION_ID } from './effects';
+import { BREAK_MEDIUM } from './constants';
 
 /***
  * Module constants
  */
+export const POST_UPDATE_TRANSACTION_ID = 'post-update';
 const MAX_FREQUENT_BLOCKS = 3;
 
 /**
@@ -209,7 +210,7 @@ export function isCleanNewPost( state ) {
  * @return {Boolean}       Whether current window size corresponds to mobile resolutions
  */
 export function isMobile( state ) {
-	return ! state.responsive.greaterThan.medium;
+	return state.browser.width < BREAK_MEDIUM;
 }
 
 /**
