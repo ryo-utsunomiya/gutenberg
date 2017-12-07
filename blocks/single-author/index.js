@@ -1,5 +1,10 @@
 
 /**
+ * External Depenedencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -9,9 +14,17 @@ import { __ } from '@wordpress/i18n';
  */
 import './style.scss';
 
-function SingleAuthor( { avatar, bio, name } ) {
+function SingleAuthor( { avatar, bio, className, name } ) {
+	const classes = classnames(
+		className,
+		'blocks-single-author',
+		{
+			'with-bio': bio,
+			'no-bio': ! bio,
+		}
+	);
 	return (
-		<section className={ `blocks-single-author ${ bio ? 'withBio' : 'noBio' } ` }>
+		<section className={ classes }>
 			{ name && <h2> { name }</h2> }
 			{ ( avatar || bio ) && (
 				<p>

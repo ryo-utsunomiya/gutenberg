@@ -49,7 +49,7 @@ class AuthorBlock extends Component {
 		const { focus, attributes, setAttributes, author } = this.props;
 		const { align, hideBio, hideAvatar, hideName } = attributes;
 		return [
-			author.isLoading && (
+			! author.data && (
 				<Placeholder key="placeholder"
 					icon="admin-post"
 					label={ __( 'Author' ) }
@@ -61,6 +61,7 @@ class AuthorBlock extends Component {
 				<SingleAuthor key="content"
 					avatar={ hideAvatar ? null : author.data.avatar_urls[ '96' ] }
 					bio={ hideBio ? null : author.data.description }
+					className={ align && `align${ align }` }
 					name={ hideName ? null : author.data.name }
 				/>
 			),

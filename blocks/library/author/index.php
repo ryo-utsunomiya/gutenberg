@@ -39,7 +39,7 @@ function gutenberg_render_block_core_author( $attributes ) {
 			$attributes['hideBio'] ? '' : esc_html( strip_tags( get_the_author_meta( 'description' ) ) )
 		);
 	}
-	$bio_class = $attributes['hideBio'] ? 'noBio' : 'withBio';
+	$bio_class = $attributes['hideBio'] ? 'no-bio' : 'with-bio';
 	$class     = "blocks-single-author align{$align} {$align} {$bio_class}";
 
 	return sprintf(
