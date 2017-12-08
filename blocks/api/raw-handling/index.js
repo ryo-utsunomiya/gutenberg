@@ -57,8 +57,14 @@ export default function rawHandler( { HTML, plainText = '', mode = 'AUTO' } ) {
 		HTML = converter.makeHtml( plainText );
 	}
 
+	const shortcodesConverted = shortcodeConverter( HTML );
+
+	//if the shortcodeConverter returns just one element it has no shortcodes
+	//even if we paste only one shortcode it returns more than one element because empty strings are added
+	const hasShortCodes = shortcodesConverted.length > 1;
+
 	// Return filtered HTML if it's inline paste or all content is inline.
-	if ( mode === 'INLINE' || ( mode === 'AUTO' && isInlineContent( HTML ) ) ) {
+	if ( ! hasShortCodes && ( mode === 'INLINE' || ( mode === 'AUTO' && isInlineContent( HTML ) ) ) ) {
 		HTML = deepFilterHTML( HTML, [
 			// Add semantic formatting before attributes are stripped.
 			formattingTransformer,
@@ -74,7 +80,7 @@ export default function rawHandler( { HTML, plainText = '', mode = 'AUTO' } ) {
 	}
 
 	// Before we parse any HTML, extract shorcodes so they don't get messed up.
-	return shortcodeConverter( HTML ).reduce( ( accu, piece ) => {
+	return shortcodesConverted.reduce( ( accu, piece ) => {
 		// Already a block from shortcode.
 		if ( typeof piece !== 'string' ) {
 			return [ ...accu, piece ];
