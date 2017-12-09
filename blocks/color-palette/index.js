@@ -15,7 +15,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import './style.scss';
 
-function ColorPalette( { colors, value, onChange } ) {
+export function ColorPalette( { colors, value, onChange } ) {
 	return (
 		<div className="blocks-color-palette">
 			{ colors.map( ( color ) => {
